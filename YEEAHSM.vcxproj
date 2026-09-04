@@ -82,6 +82,12 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <SDLCheck>false</SDLCheck>
       <OmitFramePointers>true</OmitFramePointers>
+      <!-- No exceptions are thrown anywhere in this codebase (PatternScan
+           and PatchWorker were rewritten off std::vector/std::mutex to make
+           this actually true) and no RTTI is used, so the linker can drop
+           the whole C++ unwinder (~20KB) since nothing can reach it. -->
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -89,6 +95,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <EntryPointSymbol>DllMain</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <!-- Same codegen as Release, but keeps PDB/symbols and emits per-file ASM
@@ -109,6 +116,12 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <SDLCheck>false</SDLCheck>
       <OmitFramePointers>true</OmitFramePointers>
+      <!-- No exceptions are thrown anywhere in this codebase (PatternScan
+           and PatchWorker were rewritten off std::vector/std::mutex to make
+           this actually true) and no RTTI is used, so the linker can drop
+           the whole C++ unwinder (~20KB) since nothing can reach it. -->
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
@@ -119,9 +132,12 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <EntryPointSymbol>DllMain</EntryPointSymbol>
+      <AdditionalDependencies>libcmt.lib;libucrt.lib;libvcruntime.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <MapFileName>$(OutDir)$(TargetName).map</MapFileName>
       <MapExports>true</MapExports>
+      <AdditionalOptions>/verbose:lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -1,8 +1,6 @@
 #include "PatternScan.h"
 #include <windows.h>
-#include <vector>
 #include <cstdint>
-#include <cstdlib>
 
 namespace
 {
@@ -12,11 +10,43 @@ namespace
         bool wildcard;
     };
 
-    std::vector<PatternByte> ParsePattern(const char* pattern)
+    // Hand-rolled in place of strtoul: UCRT's strtoul is locale-aware (it
+    // consults ctype/codepage tables to classify digits) and shares its
+    // parser with strtod/strtof, which drags in floating-point conversion
+    // tables neither AOB scanning nor this hex-byte parse ever needs. We
+    // only ever parse two hex nibbles at a time, so do that directly.
+    uint8_t ParseHexByte(const char* p)
     {
-        std::vector<PatternByte> bytes;
+        auto nibble = [](char c) -> uint8_t
+        {
+            if (c >= '0' && c <= '9') return static_cast<uint8_t>(c - '0');
+            if (c >= 'A' && c <= 'F') return static_cast<uint8_t>(c - 'A' + 10);
+            if (c >= 'a' && c <= 'f') return static_cast<uint8_t>(c - 'a' + 10);
+            return 0;
+        };
+        uint8_t value = nibble(p[0]);
+        if (p[1] && p[1] != ' ')
+            value = static_cast<uint8_t>((value << 4) | nibble(p[1]));
+        return value;
+    }
+
+    // Fixed-capacity in place of std::vector: every AOB pattern in this repo
+    // is well under 64 bytes, and a stack array means ParsePattern never
+    // touches the heap or exception machinery (no bad_alloc/length_error
+    // paths for the linker to pull in the C++ unwinder for).
+    constexpr size_t kMaxPatternBytes = 64;
+
+    struct PatternBytes
+    {
+        PatternByte data[kMaxPatternBytes];
+        size_t count = 0;
+    };
+
+    PatternBytes ParsePattern(const char* pattern)
+    {
+        PatternBytes bytes;
         const char* p = pattern;
-        while (*p)
+        while (*p && bytes.count < kMaxPatternBytes)
         {
             while (*p == ' ')
                 ++p;
@@ -25,14 +55,14 @@ namespace
 
             if (*p == '?')
             {
-                bytes.push_back({ 0, true });
+                bytes.data[bytes.count++] = { 0, true };
                 ++p;
                 if (*p == '?')
                     ++p; // tolerate "??" as a single wildcard token
             }
             else
             {
-                bytes.push_back({ static_cast<uint8_t>(strtoul(p, nullptr, 16)), false });
+                bytes.data[bytes.count++] = { ParseHexByte(p), false };
                 while (*p && *p != ' ')
                     ++p;
             }
@@ -75,12 +105,12 @@ namespace PatternScan
             moduleSize = size;
         }
 
-        std::vector<PatternByte> bytes = ParsePattern(pattern);
-        if (bytes.empty())
+        PatternBytes bytes = ParsePattern(pattern);
+        if (bytes.count == 0)
             return nullptr;
 
         auto start = reinterpret_cast<uint8_t*>(moduleBase);
-        size_t patLen = bytes.size();
+        size_t patLen = bytes.count;
         if (moduleSize < patLen)
             return nullptr;
 
@@ -89,9 +119,9 @@ namespace PatternScan
             bool matched = true;
             for (size_t j = 0; j < patLen; ++j)
             {
-                if (bytes[j].wildcard)
+                if (bytes.data[j].wildcard)
                     continue;
-                if (start[i + j] != bytes[j].value)
+                if (start[i + j] != bytes.data[j].value)
                 {
                     matched = false;
                     break;

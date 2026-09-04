@@ -3,7 +3,14 @@
 
 #include <windows.h>
 
-BOOL APIENTRY DllMain(HMODULE /*hModule*/, DWORD reason, LPVOID)
+// extern "C" so the symbol is emitted undecorated as "DllMain" -- Release/
+// Analyize point the linker's raw PE entry point straight at it via
+// /ENTRY:DllMain, skipping the CRT startup thunk (_DllMainCRTStartup) and
+// the ~25KB of locale/argv/mbcs init it otherwise unconditionally pulls in.
+// Safe here because every static object in this DLL is constant-initialized
+// (see NativeSigHook's constexpr ctor) -- there is no CRT dynamic-init pass
+// to skip.
+extern "C" BOOL APIENTRY DllMain(HMODULE /*hModule*/, DWORD reason, LPVOID)
 {
     switch (reason)
     {

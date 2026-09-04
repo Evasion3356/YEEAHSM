@@ -5,7 +5,6 @@
 #include <windows.h>
 #include <MinHook.h>
 #include <atomic>
-#include <mutex>
 
 namespace
 {
@@ -14,8 +13,23 @@ namespace
     constexpr DWORD kStatusEveryMs = 10000; // reassurance log every ~10s
 
     std::atomic<bool> g_stop{ false };
-    std::mutex g_mutex; // guards the Install()/Remove() race between the
-                         // worker thread and StopAndRevert()
+
+    // Raw SRWLOCK instead of std::mutex: std::mutex's lock()/unlock() can
+    // throw std::system_error, which drags the whole C++ exception-unwinder
+    // (and <system_error>'s string tables) into the binary even though it
+    // never actually throws here. SRWLOCK is a plain WinAPI primitive with
+    // no such dependency and needs no destructor.
+    SRWLOCK g_lock = SRWLOCK_INIT; // guards the Install()/Remove() race
+                                    // between the worker thread and
+                                    // StopAndRevert()
+
+    struct ScopedLock
+    {
+        SRWLOCK& lock;
+        explicit ScopedLock(SRWLOCK& l) : lock(l) { AcquireSRWLockExclusive(&lock); }
+        ~ScopedLock() { ReleaseSRWLockExclusive(&lock); }
+    };
+
     HANDLE g_thread = nullptr;
 
     bool g_stowHookInstalled = false;
@@ -39,7 +53,7 @@ namespace
         {
             bool allDone;
             {
-                std::lock_guard<std::mutex> lock(g_mutex);
+                ScopedLock lock(g_lock);
                 if (g_stop.load(std::memory_order_relaxed))
                     break;
 
@@ -83,7 +97,7 @@ namespace PatchWorker
     {
         g_stop.store(true, std::memory_order_relaxed);
 
-        std::lock_guard<std::mutex> lock(g_mutex);
+        ScopedLock lock(g_lock);
         StowWeaponsHook::Remove();
 
         if (g_minHookInitialized)

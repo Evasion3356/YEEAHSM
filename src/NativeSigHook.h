@@ -19,7 +19,11 @@ class NativeSigHook
 public:
     using Fn = Ret (*)(Args...);
 
-    NativeSigHook(const char* name, const char* pattern)
+    // constexpr so g_hook-style static instances are constant-initialized
+    // (baked directly into .data at compile time) rather than needing a
+    // CRT dynamic-initializer call at DLL load -- required for Analyize's
+    // custom-entry-point build, which skips CRT startup entirely.
+    constexpr NativeSigHook(const char* name, const char* pattern)
         : m_name(name), m_pattern(pattern)
     {
     }
