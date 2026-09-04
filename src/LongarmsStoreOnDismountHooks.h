@@ -9,18 +9,21 @@
 //   void SET_INSTANTLY_STORE_LONGARMS_ON_DISMOUNT(__int64 a1, char a2, char a3)
 //     -- 0xB832F1A686B9B810, pattern: 48 85 C9 0F 84 ? ? ? ? 48 89 5C 24 ? 57 48 83 EC ? 8B 81 ? ? ? ? 41 8A D8
 //
-// Neither function performs the actual weapon transfer -- they're just the
-// bit accessor pair. The caller return address turned out useless (it
-// points into ScriptHookRDR2's generic native dispatcher, not the real
-// caller), so instead: GET's pattern happens to end exactly at the CALL
-// opcode for the ped->WeaponComponent resolver both functions use (IDA:
-// sub_140CC5C00). Install() decodes that CALL's rel32 to recover the
-// resolver's real address without a separate signature, and every log line
-// then calls it directly to print the live WeaponComponent+0x1B5 address
-// for that ped -- feed that straight into a Cheat Engine/x64dbg Read
-// breakpoint to find whatever actually consults the bit.
+// EXPERIMENT (not a fix -- diagnostic): forces SET's storeLongarms argument
+// to 0 on every call regardless of what was actually requested (so the real
+// underlying byte gets cleared no matter who's trying to set it), and
+// forces GET's return value to 0 regardless of the real byte state. Neither
+// native ever showed up in any decompiled script (full-repo search across
+// both script sets came back empty), so this can't be gated by caller --
+// it's unconditional for as long as this hook is installed.
+//
+// Point of the test: confirm whether the camp-arrival weapon relocation
+// depends on this same flag. If forcing it to 0 also stops weapons moving
+// to the horse when entering camp, that's real evidence of a shared
+// mechanism. If camp behavior is unaffected, camp uses something else
+// entirely.
 namespace LongarmsStoreOnDismountHooks
 {
-    bool Install();
+    bool Install(bool quiet = false);
     void Remove();
 }

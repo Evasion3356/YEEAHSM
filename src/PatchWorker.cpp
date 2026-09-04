@@ -1,7 +1,6 @@
 #include "PatchWorker.h"
 #include "DismountWeaponStripPatch.h"
-#include "HidePedWeaponsHook.h"
-#include "SetCurrentPedWeaponHook.h"
+#include "LongarmsStoreOnDismountHooks.h"
 #include "Logger.h"
 
 #include <windows.h>
@@ -21,8 +20,7 @@ namespace
     HANDLE g_thread = nullptr;
 
     bool g_patchApplied = false;
-    bool g_hideHookInstalled = false;
-    bool g_setWeaponHookInstalled = false;
+    bool g_longarmsHooksInstalled = false;
     bool g_minHookInitialized = false;
 
     DWORD WINAPI WorkerProc(LPVOID)
@@ -33,7 +31,7 @@ namespace
         }
         else
         {
-            Logger::Log("PatchWorker: MH_Initialize failed -- HidePedWeaponsHook won't be available (byte patch still will).");
+            Logger::Log("PatchWorker: MH_Initialize failed -- LongarmsStoreOnDismountHooks won't be available (byte patch still will).");
         }
 
         DWORD elapsed = 0;
@@ -50,15 +48,11 @@ namespace
                 if (!g_patchApplied)
                     g_patchApplied = DismountWeaponStripPatch::Install(/*quiet=*/true);
 
-                if (!g_hideHookInstalled && g_minHookInitialized)
-                    g_hideHookInstalled = HidePedWeaponsHook::Install(/*quiet=*/true);
-
-                if (!g_setWeaponHookInstalled && g_minHookInitialized)
-                    g_setWeaponHookInstalled = SetCurrentPedWeaponHook::Install(/*quiet=*/true);
+                if (!g_longarmsHooksInstalled && g_minHookInitialized)
+                    g_longarmsHooksInstalled = LongarmsStoreOnDismountHooks::Install(/*quiet=*/true);
 
                 allDone = g_patchApplied
-                    && (g_hideHookInstalled || !g_minHookInitialized)
-                    && (g_setWeaponHookInstalled || !g_minHookInitialized);
+                    && (g_longarmsHooksInstalled || !g_minHookInitialized);
             }
 
             if (allDone)
@@ -97,8 +91,7 @@ namespace PatchWorker
 
         std::lock_guard<std::mutex> lock(g_mutex);
         DismountWeaponStripPatch::Remove();
-        HidePedWeaponsHook::Remove();
-        SetCurrentPedWeaponHook::Remove();
+        LongarmsStoreOnDismountHooks::Remove();
 
         if (g_minHookInitialized)
         {

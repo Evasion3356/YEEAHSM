@@ -14,8 +14,9 @@
 //
 // Currently retries two independent targets until both resolve (or the
 // timeout hits): DismountWeaponStripPatch (the shipped fix) and
-// HidePedWeaponsHook (a temporary diagnostic hook investigating the
-// separate camp-arrival weapon relocation).
+// LongarmsStoreOnDismountHooks (EXPERIMENT: forces the "store longarm on
+// dismount" GET/SET pair to always read/write 0, to test whether the
+// camp-arrival weapon relocation depends on the same flag).
 namespace PatchWorker
 {
     // Spawns the background thread and returns immediately. Call once from

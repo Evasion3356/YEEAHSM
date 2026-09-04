@@ -27,13 +27,7 @@
     <ClInclude Include="src\NativeSigHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\HidePedWeaponsHook.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SetCurrentPedWeaponHook.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\CampScriptCheck.h">
+    <ClInclude Include="src\LongarmsStoreOnDismountHooks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,13 +44,7 @@
     <ClCompile Include="src\PatchWorker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\HidePedWeaponsHook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SetCurrentPedWeaponHook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\CampScriptCheck.cpp">
+    <ClCompile Include="src\LongarmsStoreOnDismountHooks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp">
