@@ -46,6 +46,22 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <DynamicBase>true</DynamicBase>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <!-- Fold .rdata (import name/hint tables) and .data (one DWORD) into
+           .text. Each of the 3 original sections burned a full 512-byte
+           FileAlignment block regardless of how little it held, so one
+           merged section needs far fewer blocks total. The Import Address
+           Table itself stays in its own .idata section regardless; the
+           linker won't merge that one, by design.
+           /SECTION:.text,RWE is required here, not optional: /MERGE only
+           unions section CONTENT, not characteristics, so without it the
+           merged section inherits .text's Execute+Read only, silently
+           stripping Write from the folded-in g_oldProtect. That variable
+           is written by VirtualProtect itself (the lpflOldProtect out
+           param), so without this flag the first patch attempt at runtime
+           access-violates on a read-only page. Trade-off: the section is
+           now genuinely W+X, which some AV/EDR heuristics flag on
+           principle even though nothing here relies on writable code. -->
+      <AdditionalOptions>/MERGE:.rdata=.text /MERGE:.data=.text /SECTION:.text,RWE %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
