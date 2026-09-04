@@ -1,11 +1,12 @@
-# YEEAHS
+# YEEAHSM
 
-**Y**et **A**nother **H**orse **S**tow mod... except this one actually works.
+**Y**et **A**nother **H**orse **S**tow **M**od... except this one actually works. Say it fast
+and it comes out "yeehasm" — close enough to "yes'em" that it fits right in.
 
 Red Dead Redemption 2 keeps taking Arthur's weapons away and stowing them on his horse — when
 you dismount, and (via a completely separate internal code path) when you walk into camp. There
 are dozens of existing mods on Nexus that claim to fix this; none of the ones tested here did it
-correctly. YEEAHS patches the actual shared internal engine function responsible for the
+correctly. YEEAHSM patches the actual shared internal engine function responsible for the
 behavior, found through live reverse engineering rather than guessing at script-level
 workarounds.
 
@@ -23,7 +24,7 @@ into camp.
 
 ## Install
 
-1. Build `YEEAHS.asi` (see below), or grab a release build if one's provided.
+1. Build `YEEAHSM.asi` (see below), or grab a release build if one's provided.
 2. Drop it into your Red Dead Redemption 2 install folder, next to your ASI loader
    (e.g. `dinput8.dll`).
 
@@ -38,7 +39,7 @@ Requires Visual Studio 2022 or newer with the Desktop C++ workload.
 git clone --recurse-submodules <this repo>
 ```
 
-Open `YEEAHS.sln`, build `Release|x64`. Output lands in `bin\x64\Release\YEEAHS.asi`.
+Open `YEEAHSM.sln`, build `Release|x64`. Output lands in `bin\x64\Release\YEEAHSM.asi`.
 
 (`--recurse-submodules` matters — MinHook is vendored as a git submodule under
 `deps/minhook`, pinned to a specific upstream commit rather than copy-pasted in.)
@@ -61,7 +62,7 @@ this only guards against false negatives (not there *yet*), never false positive
 | `src/StowWeaponsHook.*` | The actual fix — hooks and discards `sub_14089EE14` |
 | `src/PatternScan.*` | Minimal AOB scanner (PE-header-based, no psapi dependency) |
 | `src/NativeSigHook.h` | Generic MinHook wrapper for a single native/internal function |
-| `src/Logger.*` | Thread-safe file logger (`YEEAHS.log`, next to the `.asi`) |
+| `src/Logger.*` | Thread-safe file logger (`YEEAHSM.log`, next to the `.asi`) |
 
 Several investigation-only files (`DismountWeaponStripPatch`, `LongarmsStoreOnDismountHooks`,
 `CampScriptCheck`, `HidePedWeaponsHook`, `SetCurrentPedWeaponHook`, and others) remain on disk

@@ -55,7 +55,7 @@ namespace Logger
     {
         std::lock_guard<std::mutex> lock(g_mutex);
         g_file.open(GetLogPath(), std::ios::out | std::ios::app);
-        g_file << "\n----- YEEAHS session start -----\n";
+        g_file << "\n----- YEEAHSM session start -----\n";
         g_file.flush();
     }
 
@@ -64,7 +64,7 @@ namespace Logger
         std::lock_guard<std::mutex> lock(g_mutex);
         if (g_file.is_open())
         {
-            g_file << "----- YEEAHS session end -----\n";
+            g_file << "----- YEEAHSM session end -----\n";
             g_file.close();
         }
     }

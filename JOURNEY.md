@@ -1,4 +1,4 @@
-# The YEEAHS Journey
+# The YEEAHSM Journey
 
 How a "keep your weapons on you" RDR2 mod actually got built — from first principles, through
 two confirmed dead ends, one AI mistake caught by evidence, and a live-debugger breakthrough.
@@ -205,7 +205,9 @@ sub_14089EE14(v20, v41, (*(DWORD*)(v40 + 2352) >> 11) & 1, v12, 1); // RETN this
 **Naming.** 🧑 wanted a recursive backronym in the LAME/YAML tradition. 🤖 proposed several
 options (`ARTHUR`, `NOPE`, `MICAH`); 🧑 steered toward a "Yet Another X" / western "yeehaw"
 flavor instead. 🤖 proposed `YEEHAW` = *"Yer Equipment's Extra Holsterin' Ain't Wanted."* 🧑
-landed on the final name: **YEEAHS** — *Yet Another Horse Stow mod.*
+landed on **YEEAHS** — *Yet Another Horse Stow mod* — then extended it one more letter to
+**YEEAHSM** to fold "Mod" into the acronym properly, noting that said fast it comes out
+"yeehasm," which lands close enough to "yes'em" to be the actual final name.
 
 **The size investigation.** 🧑 flagged the shipped `.asi` as absurdly large for "one hook"
 (~319KB) and demanded real verbose-build evidence, not a guess:
