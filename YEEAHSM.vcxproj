@@ -91,7 +91,9 @@
     <ClInclude Include="src\StowWeaponsHook.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Logger.cpp" />
+    <ClCompile Include="src\Logger.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\PatternScan.cpp" />
     <ClCompile Include="src\PatchWorker.cpp" />
     <ClCompile Include="src\StowWeaponsHook.cpp" />
