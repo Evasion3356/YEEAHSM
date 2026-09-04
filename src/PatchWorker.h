@@ -7,10 +7,15 @@
 // exposes for "unpacking done" to wait on, so the practical equivalent is
 // retrying on a timer from a background thread until it resolves.
 //
-// This is safe against false positives: DismountWeaponStripPatch's pattern
-// is 10 specific bytes, so matching still-encrypted/packed memory by chance
-// is astronomically unlikely (~1 in 2^80). The only real risk is a false
-// negative (not there yet), which retrying handles.
+// This is safe against false positives: every pattern involved is 8+
+// specific bytes, so matching still-encrypted/packed memory by chance is
+// astronomically unlikely. The only real risk is a false negative (not
+// there yet), which retrying handles.
+//
+// Currently retries two independent targets until both resolve (or the
+// timeout hits): DismountWeaponStripPatch (the shipped fix) and
+// HidePedWeaponsHook (a temporary diagnostic hook investigating the
+// separate camp-arrival weapon relocation).
 namespace PatchWorker
 {
     // Spawns the background thread and returns immediately. Call once from

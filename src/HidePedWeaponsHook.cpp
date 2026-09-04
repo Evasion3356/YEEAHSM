@@ -1,7 +1,9 @@
 #include "HidePedWeaponsHook.h"
 #include "NativeSigHook.h"
+#include "CampScriptCheck.h"
 
 #include <cstdint>
+#include <intrin.h>
 
 namespace
 {
@@ -12,18 +14,19 @@ namespace
 
     void Detour(int64_t a1, int32_t a2, char a3)
     {
-        if (Logger::IsEnabled())
-        {
-            Logger::LogFormatted(
-                "HIDE_PED_WEAPONS(ped=0x%llX, p0=%d, immediately=%d)",
-                a1, a2, (int)a3);
-        }
-        g_hook.CallOriginal(a1, a2, a3);
+        bool discard = CampScriptCheck::ShouldDiscard("HIDE_PED_WEAPONS");
+
+        Logger::LogFormatted(
+            "HIDE_PED_WEAPONS(ped=0x%llX, p0=%d, immediately=%d)  retaddr=0x%p  %s",
+            a1, a2, (int)a3, _ReturnAddress(), discard ? "[DISCARDED]" : "[passed through]");
+
+        if (!discard)
+            g_hook.CallOriginal(a1, a2, a3);
     }
 }
 
 namespace HidePedWeaponsHook
 {
-    bool Install() { return g_hook.Install(&Detour); }
+    bool Install(bool quiet) { return g_hook.Install(&Detour, quiet); }
     void Remove() { g_hook.Remove(); }
 }

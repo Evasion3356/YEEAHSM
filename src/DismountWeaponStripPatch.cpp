@@ -8,7 +8,8 @@ namespace
     BytePatch g_patch(
         "DismountWeaponStripGate",
         kFindPattern,
-        { 0x30, 0xC0, 0x90, 0x90, 0x90, 0x90 }); // xor al,al ; nop x4
+        { 0x30, 0xC0, 0x0F, 0x1F, 0x40, 0x00}); // xor al,al ; nop x4
+
 }
 
 namespace DismountWeaponStripPatch

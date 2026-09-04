@@ -1,8 +1,11 @@
 #include "PatchWorker.h"
 #include "DismountWeaponStripPatch.h"
+#include "HidePedWeaponsHook.h"
+#include "SetCurrentPedWeaponHook.h"
 #include "Logger.h"
 
 #include <windows.h>
+#include <MinHook.h>
 #include <atomic>
 #include <mutex>
 
@@ -17,20 +20,49 @@ namespace
                          // worker thread and StopAndRevert()
     HANDLE g_thread = nullptr;
 
+    bool g_patchApplied = false;
+    bool g_hideHookInstalled = false;
+    bool g_setWeaponHookInstalled = false;
+    bool g_minHookInitialized = false;
+
     DWORD WINAPI WorkerProc(LPVOID)
     {
+        if (MH_Initialize() == MH_OK)
+        {
+            g_minHookInitialized = true;
+        }
+        else
+        {
+            Logger::Log("PatchWorker: MH_Initialize failed -- HidePedWeaponsHook won't be available (byte patch still will).");
+        }
+
         DWORD elapsed = 0;
         DWORD sinceStatus = 0;
 
         while (!g_stop.load(std::memory_order_relaxed) && elapsed < kTimeoutMs)
         {
+            bool allDone;
             {
                 std::lock_guard<std::mutex> lock(g_mutex);
                 if (g_stop.load(std::memory_order_relaxed))
                     break;
-                if (DismountWeaponStripPatch::Install(/*quiet=*/true))
-                    return 0; // applied, done
+
+                if (!g_patchApplied)
+                    g_patchApplied = DismountWeaponStripPatch::Install(/*quiet=*/true);
+
+                if (!g_hideHookInstalled && g_minHookInitialized)
+                    g_hideHookInstalled = HidePedWeaponsHook::Install(/*quiet=*/true);
+
+                if (!g_setWeaponHookInstalled && g_minHookInitialized)
+                    g_setWeaponHookInstalled = SetCurrentPedWeaponHook::Install(/*quiet=*/true);
+
+                allDone = g_patchApplied
+                    && (g_hideHookInstalled || !g_minHookInitialized)
+                    && (g_setWeaponHookInstalled || !g_minHookInitialized);
             }
+
+            if (allDone)
+                return 0;
 
             Sleep(kRetryIntervalMs);
             elapsed += kRetryIntervalMs;
@@ -44,7 +76,7 @@ namespace
         }
 
         if (!g_stop.load(std::memory_order_relaxed))
-            Logger::Log("PatchWorker: gave up after timeout -- pattern never resolved.");
+            Logger::Log("PatchWorker: gave up after timeout -- pattern(s) never resolved.");
 
         return 0;
     }
@@ -65,6 +97,14 @@ namespace PatchWorker
 
         std::lock_guard<std::mutex> lock(g_mutex);
         DismountWeaponStripPatch::Remove();
+        HidePedWeaponsHook::Remove();
+        SetCurrentPedWeaponHook::Remove();
+
+        if (g_minHookInitialized)
+        {
+            MH_Uninitialize();
+            g_minHookInitialized = false;
+        }
 
         if (g_thread)
         {

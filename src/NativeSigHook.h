@@ -24,12 +24,15 @@ public:
     {
     }
 
-    bool Install(Fn detour)
+    // quiet=true suppresses the "pattern not found" log -- for a retry loop
+    // that expects misses while the target process is still unpacking.
+    bool Install(Fn detour, bool quiet = false)
     {
         m_target = PatternScan::Find(m_pattern);
         if (!m_target)
         {
-            Logger::LogFormatted("%s: pattern not found -- game version mismatch or bad AOB.", m_name);
+            if (!quiet)
+                Logger::LogFormatted("%s: pattern not found -- game version mismatch or bad AOB.", m_name);
             return false;
         }
 

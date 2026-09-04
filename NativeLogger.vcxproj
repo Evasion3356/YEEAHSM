@@ -41,11 +41,13 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)deps\minhook\include;$(ProjectDir)..\ScriptHookSDK\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\ScriptHookSDK\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ScriptHookRDR2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -78,13 +80,25 @@
     <ClInclude Include="src\BytePatch.h" />
     <ClInclude Include="src\DismountWeaponStripPatch.h" />
     <ClInclude Include="src\PatchWorker.h" />
+    <ClInclude Include="src\NativeSigHook.h" />
+    <ClInclude Include="src\HidePedWeaponsHook.h" />
+    <ClInclude Include="src\SetCurrentPedWeaponHook.h" />
+    <ClInclude Include="src\CampScriptCheck.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp" />
     <ClCompile Include="src\PatternScan.cpp" />
     <ClCompile Include="src\DismountWeaponStripPatch.cpp" />
     <ClCompile Include="src\PatchWorker.cpp" />
+    <ClCompile Include="src\HidePedWeaponsHook.cpp" />
+    <ClCompile Include="src\SetCurrentPedWeaponHook.cpp" />
+    <ClCompile Include="src\CampScriptCheck.cpp" />
     <ClCompile Include="src\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="deps\minhook\build\VC18\libMinHook.vcxproj">
+      <Project>{F142A341-5EE0-442D-A15F-98AE9B48DBAE}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
