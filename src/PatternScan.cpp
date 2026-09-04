@@ -103,4 +103,19 @@ namespace PatternScan
 
         return nullptr;
     }
+
+    size_t ToModuleOffset(void* address)
+    {
+        void* base = nullptr;
+        size_t size = 0;
+        if (!GetMainModuleRange(&base, &size))
+            return 0;
+
+        auto addr = reinterpret_cast<uint8_t*>(address);
+        auto baseAddr = reinterpret_cast<uint8_t*>(base);
+        if (addr < baseAddr || addr >= baseAddr + size)
+            return 0; // not within the main module
+
+        return static_cast<size_t>(addr - baseAddr);
+    }
 }

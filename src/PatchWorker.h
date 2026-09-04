@@ -12,11 +12,14 @@
 // astronomically unlikely. The only real risk is a false negative (not
 // there yet), which retrying handles.
 //
-// Currently retries two independent targets until both resolve (or the
-// timeout hits): DismountWeaponStripPatch (the shipped fix) and
-// LongarmsStoreOnDismountHooks (EXPERIMENT: forces the "store longarm on
-// dismount" GET/SET pair to always read/write 0, to test whether the
-// camp-arrival weapon relocation depends on the same flag).
+// Currently retries one target until it resolves (or the timeout hits):
+// StowWeaponsHook, hooking sub_14089EE14 (the function proven live via a
+// manual RETN patch to be what actually moves a weapon onto the horse) and
+// discarding every call. This supersedes DismountWeaponStripPatch, which
+// only neutered the dismount-specific caller-side gate feeding into this
+// same function -- patching the shared function directly covers every
+// caller (dismount, camp-arrival, anything else) in one place, so the
+// gate-side patch is no longer needed.
 namespace PatchWorker
 {
     // Spawns the background thread and returns immediately. Call once from

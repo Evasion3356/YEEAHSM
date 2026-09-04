@@ -15,19 +15,13 @@
     <ClInclude Include="src\PatternScan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\BytePatch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DismountWeaponStripPatch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\PatchWorker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\NativeSigHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\LongarmsStoreOnDismountHooks.h">
+    <ClInclude Include="src\StowWeaponsHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,13 +32,10 @@
     <ClCompile Include="src\PatternScan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\DismountWeaponStripPatch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\PatchWorker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\LongarmsStoreOnDismountHooks.cpp">
+    <ClCompile Include="src\StowWeaponsHook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp">

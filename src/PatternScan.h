@@ -16,4 +16,12 @@ namespace PatternScan
     // anything). Returns the address of the first match, or nullptr.
     // Pass moduleBase=nullptr to scan the main module automatically.
     void* Find(const char* pattern, void* moduleBase = nullptr, size_t moduleSize = 0);
+
+    // Converts an absolute address into a module-relative offset (RVA) --
+    // i.e. the number you'd write after "RDR2.exe+" to match IDA's own
+    // addressing. Absolute addresses shift every run under ASLR and are
+    // meaningless to compare against IDA; this is what actually correlates.
+    // Returns 0 if the main module can't be resolved or `address` isn't
+    // actually inside it.
+    size_t ToModuleOffset(void* address);
 }

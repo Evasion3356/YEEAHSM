@@ -75,18 +75,15 @@
   <ItemGroup>
     <ClInclude Include="src\Logger.h" />
     <ClInclude Include="src\PatternScan.h" />
-    <ClInclude Include="src\BytePatch.h" />
-    <ClInclude Include="src\DismountWeaponStripPatch.h" />
     <ClInclude Include="src\PatchWorker.h" />
     <ClInclude Include="src\NativeSigHook.h" />
-    <ClInclude Include="src\LongarmsStoreOnDismountHooks.h" />
+    <ClInclude Include="src\StowWeaponsHook.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp" />
     <ClCompile Include="src\PatternScan.cpp" />
-    <ClCompile Include="src\DismountWeaponStripPatch.cpp" />
     <ClCompile Include="src\PatchWorker.cpp" />
-    <ClCompile Include="src\LongarmsStoreOnDismountHooks.cpp" />
+    <ClCompile Include="src\StowWeaponsHook.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>

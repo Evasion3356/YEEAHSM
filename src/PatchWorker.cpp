@@ -1,6 +1,5 @@
 #include "PatchWorker.h"
-#include "DismountWeaponStripPatch.h"
-#include "LongarmsStoreOnDismountHooks.h"
+#include "StowWeaponsHook.h"
 #include "Logger.h"
 
 #include <windows.h>
@@ -19,8 +18,7 @@ namespace
                          // worker thread and StopAndRevert()
     HANDLE g_thread = nullptr;
 
-    bool g_patchApplied = false;
-    bool g_longarmsHooksInstalled = false;
+    bool g_stowHookInstalled = false;
     bool g_minHookInitialized = false;
 
     DWORD WINAPI WorkerProc(LPVOID)
@@ -31,7 +29,7 @@ namespace
         }
         else
         {
-            Logger::Log("PatchWorker: MH_Initialize failed -- LongarmsStoreOnDismountHooks won't be available (byte patch still will).");
+            Logger::Log("PatchWorker: MH_Initialize failed -- StowWeaponsHook can't be installed.");
         }
 
         DWORD elapsed = 0;
@@ -45,14 +43,10 @@ namespace
                 if (g_stop.load(std::memory_order_relaxed))
                     break;
 
-                if (!g_patchApplied)
-                    g_patchApplied = DismountWeaponStripPatch::Install(/*quiet=*/true);
+                if (!g_stowHookInstalled && g_minHookInitialized)
+                    g_stowHookInstalled = StowWeaponsHook::Install(/*quiet=*/true);
 
-                if (!g_longarmsHooksInstalled && g_minHookInitialized)
-                    g_longarmsHooksInstalled = LongarmsStoreOnDismountHooks::Install(/*quiet=*/true);
-
-                allDone = g_patchApplied
-                    && (g_longarmsHooksInstalled || !g_minHookInitialized);
+                allDone = g_stowHookInstalled || !g_minHookInitialized;
             }
 
             if (allDone)
@@ -70,7 +64,7 @@ namespace
         }
 
         if (!g_stop.load(std::memory_order_relaxed))
-            Logger::Log("PatchWorker: gave up after timeout -- pattern(s) never resolved.");
+            Logger::Log("PatchWorker: gave up after timeout -- pattern never resolved.");
 
         return 0;
     }
@@ -90,8 +84,7 @@ namespace PatchWorker
         g_stop.store(true, std::memory_order_relaxed);
 
         std::lock_guard<std::mutex> lock(g_mutex);
-        DismountWeaponStripPatch::Remove();
-        LongarmsStoreOnDismountHooks::Remove();
+        StowWeaponsHook::Remove();
 
         if (g_minHookInitialized)
         {
