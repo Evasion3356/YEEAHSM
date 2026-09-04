@@ -66,9 +66,12 @@ zone."
 - 🤖 proposed forcing this flag on, to make its effect deterministic for testing — but picked the
   **wrong hash** (`0x641351E9AD103890`) based only on it being called in the same script tick as
   a plausible eligibility check, never having actually seen its decompiled behavior.
-- 🧑 caught it: *"Are you sure 0x641351E9AD103890 is the right hash? This function doesn't look
-  right in IDA... looks like it's doing bit bang math on a pointer dereference"* — and pointed at
-  the two natives that **did** look correct in the decompile.
+- 🧑 caught it — not from a hunch, but by actually checking in IDA: 0x641351E9AD103890's real
+  decompiled function was doing something completely unrelated to what had been asked about.
+  Separately, 🧑 confirmed the two natives already suspected as correct
+  (`_GET_LONGARMS_INSTANTLY_STORE_ON_DISMOUNT` / `_SET_INSTANTLY_STORE_LONGARMS_ON_DISMOUNT`)
+  were genuinely doing bit-bang math on a pointer dereference — matching the documented
+  "selects one of two internal bits" behavior.
 - 🤖 acknowledged the error directly: the call-site correlation was a hypothesis, not a
   verification, and the real setter takes 3 args, not the 2 the wrong hash's call site showed.
 - 🧑 supplied the full decompile of both the real `GET` and `SET` functions, confirming they
