@@ -64,10 +64,11 @@ this only guards against false negatives (not there *yet*), never false positive
 | `src/NativeSigHook.h` | Generic MinHook wrapper for a single native/internal function |
 | `src/Logger.*` | Thread-safe file logger (`YEEAHSM.log`, next to the `.asi`) |
 
-Several investigation-only files (`DismountWeaponStripPatch`, `LongarmsStoreOnDismountHooks`,
-`CampScriptCheck`, `HidePedWeaponsHook`, `SetCurrentPedWeaponHook`, and others) remain on disk
-but are excluded from the build — they're kept for reference since they're part of the actual
-investigation trail documented in `JOURNEY.md`, not because they're needed at runtime.
+The investigation-only files from earlier dead ends (`DismountWeaponStripPatch`,
+`LongarmsStoreOnDismountHooks`, `CampScriptCheck`, `HidePedWeaponsHook`,
+`SetCurrentPedWeaponHook`, and others) were never part of the build and have since been removed
+from the tree — the full investigation trail, including the dead ends, is preserved in
+`JOURNEY.md`.
 
 ## Credits
 
