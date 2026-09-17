@@ -65,6 +65,13 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>for /f "delims=" %%G in ('powershell -NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)BuildTools\Find-RDR2GameDir.ps1"') do set "GAMEDIR=%%G"
+if not defined GAMEDIR exit /b 1
+copy /Y "$(TargetPath)" "%GAMEDIR%\$(TargetFileName)"
+copy /Y "$(TargetDir)$(TargetName).pdb" "%GAMEDIR%\$(TargetName).pdb"</Command>
+      <Message>Deploying $(TargetFileName) + PDB (auto-locating RDR2 install dir)</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
@@ -90,6 +97,12 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
+    <PostBuildEvent>
+      <Command>for /f "delims=" %%G in ('powershell -NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)BuildTools\Find-RDR2GameDir.ps1"') do set "GAMEDIR=%%G"
+if not defined GAMEDIR exit /b 1
+copy /Y "$(TargetPath)" "%GAMEDIR%\$(TargetFileName)"</Command>
+      <Message>Deploying $(TargetFileName) (auto-locating RDR2 install dir)</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <!-- Same codegen as Release, but keeps PDB/symbols and emits per-file ASM
        listings + a linker map so the resulting binary can be inspected
