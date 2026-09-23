@@ -75,3 +75,15 @@ from the tree — the full investigation trail, including the dead ends, is pres
 Reverse engineering, live debugging, and the actual breakthrough: **gir489**.
 Tooling, scaffolding, and script archaeology: **Claude Code** (Anthropic).
 See [JOURNEY.md](JOURNEY.md) for the detailed, step-by-step attribution.
+
+## Releasing
+
+Add a `## [X.Y.Z] - date` entry to `CHANGELOG.md`, commit it, then push an
+`X.Y` tag (`git tag -a X.Y -m "X.Y.Z - summary"`, `git push origin
+main X.Y`). `.github/workflows/release.yml` then runs every unit test
+project under `tests/`, builds the Release `.asi` on a GitHub Windows runner
+(deploy step off), and publishes a GitHub release named "YEEAHSM X.Y.Z" with
+that changelog entry as its notes and the `.asi` attached. To release an
+existing tag again, use "Run workflow" on the Actions tab and enter the tag.
+The projects target toolset v145 (VS 2026); if the runner only has an older
+Visual Studio, the workflow builds with v143 instead.
