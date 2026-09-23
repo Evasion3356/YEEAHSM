@@ -1,4 +1,5 @@
 #include "Logger.h"
+#include "LogFallback.h"
 #include <windows.h>
 #include <fstream>
 #include <mutex>
@@ -13,24 +14,7 @@ namespace
 {
     std::ofstream g_file;
     std::mutex g_mutex;
-    bool g_enabled = false;
-
-    std::string GetLogPath()
-    {
-        HMODULE hSelf = nullptr;
-        GetModuleHandleExA(
-            GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-            reinterpret_cast<LPCSTR>(&GetLogPath), &hSelf);
-
-        char path[MAX_PATH]{};
-        GetModuleFileNameA(hSelf, path, MAX_PATH);
-
-        std::string p(path);
-        auto dot = p.find_last_of('.');
-        if (dot != std::string::npos)
-            p = p.substr(0, dot);
-        return p + ".log";
-    }
+    LogFallback::Resolved g_target;
 
     std::string Timestamp()
     {
@@ -54,8 +38,13 @@ namespace Logger
     void Init()
     {
         std::lock_guard<std::mutex> lock(g_mutex);
-        g_file.open(GetLogPath(), std::ios::out | std::ios::app);
+        g_target = LogFallback::Resolve(LogFallback::ModuleDirectory(), L"YEEAHSM.log", LogFallback::FallbackDirectory());
+        if (g_target.path.empty())
+            return;
+        g_file.open(g_target.path, std::ios::out | std::ios::app);
         g_file << "\n----- YEEAHSM session start -----\n";
+        if (g_target.usedFallback)
+            g_file << "Log redirected here: could not write " << LogFallback::ToUtf8(g_target.rejectedPath) << "\n";
         g_file.flush();
     }
 
@@ -86,18 +75,5 @@ namespace Logger
         vsnprintf(buf, sizeof(buf), fmt, args);
         va_end(args);
         Log(buf);
-    }
-
-    bool ToggleEnabled()
-    {
-        std::lock_guard<std::mutex> lock(g_mutex);
-        g_enabled = !g_enabled;
-        return g_enabled;
-    }
-
-    bool IsEnabled()
-    {
-        std::lock_guard<std::mutex> lock(g_mutex);
-        return g_enabled;
     }
 }
