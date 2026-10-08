@@ -1,11 +1,14 @@
 #include "StowWeaponsHook.h"
 #include "NativeSigHook.h"
 #include "PatternScan.h"
+#include "YEEAHSMLog.h"
 
 #include <cstdint>
 #include <atomic>
 #include <intrin.h>
 
+namespace YEEAHSM
+{
 namespace
 {
     constexpr const char* kPattern =
@@ -25,7 +28,7 @@ namespace
 
         size_t retOffset = PatternScan::ToModuleOffset(_ReturnAddress());
 
-        Logger::LogFormatted(
+        Log::Formatted(
             "StowWeapons call #%llu: a1=0x%llX a2=0x%llX a3=%u a4=0x%llX a5=%d  retaddr=RDR2.exe+0x%zX  [DISCARDED -- not calling original]",
             count, a1, a2, a3, a4, (int)a5, retOffset);
 #endif
@@ -38,7 +41,9 @@ namespace
     }
 }
 
-namespace StowWeaponsHook
+} // namespace YEEAHSM
+
+namespace YEEAHSM::StowWeaponsHook
 {
     bool Install(bool quiet) { return g_hook.Install(&Detour, quiet); }
     void Remove() { g_hook.Remove(); }

@@ -1,5 +1,6 @@
 #include "Logger.h"
 #include "PatchWorker.h"
+#include "YEEAHSMLog.h"
 
 #include <windows.h>
 
@@ -9,6 +10,7 @@ BOOL APIENTRY DllMain(HMODULE /*hModule*/, DWORD reason, LPVOID lpReserved)
     {
     case DLL_PROCESS_ATTACH:
         Logger::Init();
+        YEEAHSM::Log::SetSink([](const char* line) { Logger::Log(line); });
         PatchWorker::Start();
         break;
 

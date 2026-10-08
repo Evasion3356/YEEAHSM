@@ -1,6 +1,6 @@
 #pragma once
 #include "PatternScan.h"
-#include "Logger.h"
+#include "YEEAHSMLog.h"
 
 #include <MinHook.h>
 
@@ -13,6 +13,8 @@
 // hand-rolled Install/Remove pair was pure duplication -- the actual
 // per-native work is just "what's the signature" and "what do I log",
 // which is exactly what varies between instantiations here.
+namespace YEEAHSM
+{
 template <typename Ret, typename... Args>
 class NativeSigHook
 {
@@ -32,7 +34,7 @@ public:
         if (!m_target)
         {
             if (!quiet)
-                Logger::LogFormatted("%s: pattern not found -- game version mismatch or bad AOB.", m_name);
+                Log::Formatted("%s: pattern not found -- game version mismatch or bad AOB.", m_name);
             return false;
         }
 
@@ -41,7 +43,7 @@ public:
             reinterpret_cast<void**>(&m_original));
         if (status != MH_OK)
         {
-            Logger::LogFormatted("%s: MH_CreateHook failed, status=%d", m_name, (int)status);
+            Log::Formatted("%s: MH_CreateHook failed, status=%d", m_name, (int)status);
             m_target = nullptr;
             return false;
         }
@@ -49,14 +51,14 @@ public:
         status = MH_EnableHook(m_target);
         if (status != MH_OK)
         {
-            Logger::LogFormatted("%s: MH_EnableHook failed, status=%d", m_name, (int)status);
+            Log::Formatted("%s: MH_EnableHook failed, status=%d", m_name, (int)status);
             MH_RemoveHook(m_target);
             m_target = nullptr;
             return false;
         }
 
         m_hooked = true;
-        Logger::LogFormatted("%s: hooked at 0x%p", m_name, m_target);
+        Log::Formatted("%s: hooked at 0x%p", m_name, m_target);
         return true;
     }
 
@@ -91,3 +93,4 @@ private:
     Fn m_original = nullptr;
     bool m_hooked = false;
 };
+} // namespace YEEAHSM

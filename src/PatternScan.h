@@ -4,7 +4,7 @@
 // Minimal IDA-style AOB pattern scanner. No dependency beyond kernel32 --
 // reads the PE header of the running module directly instead of pulling in
 // psapi/toolhelp.
-namespace PatternScan
+namespace YEEAHSM::PatternScan
 {
     // Resolves the main module's (the game .exe) base address and
     // SizeOfImage from its own PE header. Used as the default scan range

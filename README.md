@@ -63,6 +63,13 @@ this only guards against false negatives (not there *yet*), never false positive
 | `src/PatternScan.*` | Minimal AOB scanner (PE-header-based, no psapi dependency) |
 | `src/NativeSigHook.h` | Generic MinHook wrapper for a single native/internal function |
 | `src/Logger.*` | Thread-safe file logger (`YEEAHSM.log`, next to the `.asi`) |
+| `src/YEEAHSMLog.*` | Library log seam: forwards lines to a sink the host sets |
+
+`YEEAHSMLib.vcxproj` builds `StowWeaponsHook`, `PatternScan`, `NativeSigHook` and
+`YEEAHSMLog` (all in `namespace YEEAHSM`) as a static library. The ASI links it, and so does
+[Rampagio](https://github.com/Evasion3356/Rampagio), which pulls this repo in as a submodule.
+The library includes `MinHook.h` but doesn't build MinHook: the host links its own copy and
+calls `MH_Initialize` before `StowWeaponsHook::Install`.
 
 The investigation-only files from earlier dead ends (`DismountWeaponStripPatch`,
 `LongarmsStoreOnDismountHooks`, `CampScriptCheck`, `HidePedWeaponsHook`,

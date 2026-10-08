@@ -41,7 +41,7 @@ namespace
     }
 }
 
-namespace PatternScan
+namespace YEEAHSM::PatternScan
 {
     bool GetMainModuleRange(void** outBase, size_t* outSize)
     {

@@ -149,24 +149,25 @@ copy /Y "$(TargetPath)" "%GAMEDIR%\$(TargetFileName)"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Logger.h" />
-    <ClInclude Include="src\PatternScan.h" />
     <ClInclude Include="src\PatchWorker.h" />
-    <ClInclude Include="src\NativeSigHook.h" />
     <ClInclude Include="src\StowWeaponsHook.h" />
+    <ClInclude Include="src\YEEAHSMLog.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Logger.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)'=='Analyize'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="src\PatternScan.cpp" />
     <ClCompile Include="src\PatchWorker.cpp" />
-    <ClCompile Include="src\StowWeaponsHook.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="deps\minhook\build\VC18\libMinHook.vcxproj">
       <Project>{F142A341-5EE0-442D-A15F-98AE9B48DBAE}</Project>
+    </ProjectReference>
+    <!-- The stow hook itself; Rampagio links the same library. -->
+    <ProjectReference Include="YEEAHSMLib.vcxproj">
+      <Project>{8D3F6A21-7C4B-4E59-B1A2-9E0C5D7F3B48}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

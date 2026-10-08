@@ -12,16 +12,13 @@
     <ClInclude Include="src\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\PatternScan.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\PatchWorker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\NativeSigHook.h">
+    <ClInclude Include="src\StowWeaponsHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\StowWeaponsHook.h">
+    <ClInclude Include="src\YEEAHSMLog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -29,13 +26,7 @@
     <ClCompile Include="src\Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\PatternScan.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\PatchWorker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\StowWeaponsHook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp">

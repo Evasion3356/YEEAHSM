@@ -17,7 +17,7 @@
 // without touching the executable directly. Point of still logging: see
 // how many distinct call sites reach this (dismount via sub_1409E2828,
 // camp-arrival via some other path, maybe more) even while it's neutered.
-namespace StowWeaponsHook
+namespace YEEAHSM::StowWeaponsHook
 {
     bool Install(bool quiet = false);
     void Remove();

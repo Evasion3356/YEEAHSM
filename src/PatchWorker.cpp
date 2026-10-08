@@ -44,7 +44,7 @@ namespace
                     break;
 
                 if (!g_stowHookInstalled && g_minHookInitialized)
-                    g_stowHookInstalled = StowWeaponsHook::Install(/*quiet=*/true);
+                    g_stowHookInstalled = YEEAHSM::StowWeaponsHook::Install(/*quiet=*/true);
 
                 allDone = g_stowHookInstalled || !g_minHookInitialized;
             }
@@ -84,7 +84,7 @@ namespace PatchWorker
         g_stop.store(true, std::memory_order_relaxed);
 
         std::lock_guard<std::mutex> lock(g_mutex);
-        StowWeaponsHook::Remove();
+        YEEAHSM::StowWeaponsHook::Remove();
 
         if (g_minHookInitialized)
         {
